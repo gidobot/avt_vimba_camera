@@ -1,27 +1,30 @@
 <!-- Example launch file for stereo camera application -->
 <launch>
   <group ns="stereo">
-    <node name="stereo_image_proc" pkg="stereo_image_proc" type="stereo_image_proc"/>
+    <!--<node name="stereo_image_proc" pkg="stereo_image_proc" type="stereo_image_proc"/>-->
 
     <!-- Left -->
     <include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
       <arg name="name" value="left"/>
-      <arg name="ip" value=""/>
+      <arg name="ip" value="192.168.1.20"/>
       <arg name="guid" value=""/>
-      <arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>
+      <!--<arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>-->
 
       <arg name="ptp_mode" value="Master"/>
       <arg name="trigger_source" value="FixedRate"/>
       <arg name="sync_out_source" value="Exposing"/>
       <arg name="sync_out_polarity" value="Normal"/>
+
+      <arg name="acquisition_rate" value="10"/>
+      <arg name="acquisition_rate_enable" value="True"/>
     </include>
 
     <!-- Right -->
     <include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
       <arg name="name" value="right"/>
-      <arg name="ip" value=""/>
+      <arg name="ip" value="192.168.1.21"/>
       <arg name="guid" value=""/>
-      <arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>
+      <!--<arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>-->
 
       <arg name="ptp_mode" value="Slave"/>
       <arg name="trigger_source" value="Line1"/>
