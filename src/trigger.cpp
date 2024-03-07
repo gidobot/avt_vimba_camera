@@ -8,6 +8,12 @@ Trigger::Trigger() : vimba_system_(AVT::VmbAPI::VimbaSystem::GetInstance()), pnh
 
 Trigger::~Trigger()
 {
+  VmbErrorType lError = VmbErrorSuccess;
+  lError = interface_ptr_->Close();
+  if( VmbErrorSuccess != lError )
+  {
+      std::cout << "Could not close interface. Reason: " << lError << std::endl;
+  }
   vimba_system_.Shutdown();
 }
 
@@ -22,7 +28,8 @@ void Trigger::Init()
   }
 
   LoadParams();
-  InitializeAddress();
+  // InitializeInterface();
+  // InitializeAddress();
 
   if (trigger_src_ == "timer")
   {
@@ -42,18 +49,19 @@ void Trigger::Init()
 void Trigger::LoadParams()
 {
   std::string destination_ip;
-  pnh_.param<std::string>("destination_ip", destination_ip, "192.168.3.40");
+  pnh_.param<std::string>("destination_ip", destination_ip, "");
+  pnh_.param<std::string>("destination_interface", destination_interface_);
   pnh_.param<std::string>("trigger_src", trigger_src_, "timer");
-  pnh_.param<float>("timer_period", timer_period_, 0.1);
+  pnh_.param<float>("timer_period", timer_period_, 0.2);
   pnh_.param<int>("action_device_key", action_device_key_, 1);
   pnh_.param<int>("action_group_key", action_group_key_, 1);
   pnh_.param<int>("action_group_mask", action_group_mask_, 1);
 
-  if (inet_aton(destination_ip.c_str(), &destination_ip_) == 0)
-  {
-    ROS_ERROR("Unable to parse desination_ip: %s", destination_ip.c_str());
-    ros::shutdown();
-  }
+  // if (inet_aton(destination_ip.c_str(), &destination_ip_) == 0)
+  // {
+  //   ROS_ERROR("Unable to parse desination_ip: %s", destination_ip.c_str());
+  //   ros::shutdown();
+  // }
 }
 
 void Trigger::InitializeAddress()
@@ -66,6 +74,82 @@ void Trigger::InitializeAddress()
   }
 
   ROS_INFO("Destination address set");
+}
+
+void Trigger::InitializeInterface()
+{
+  VmbErrorType return_value = VmbErrorSuccess;
+
+  // if (!SetIntFeatureValue("GevActionDestinationIPAddress", destination_ip_.s_addr))
+  // {
+  //   ROS_ERROR("Could not set destination address");
+  // }
+
+  // ROS_INFO("Destination address set");
+
+  // get available interfaces
+  AVT::VmbAPI::InterfacePtrVector lInterfaces;
+  return_value = vimba_system_.GetInterfaces(lInterfaces);
+  if ( (return_value != VmbErrorSuccess) || (lInterfaces.size() == 0) )
+  {
+    ROS_ERROR("No interfaces found");
+    ros::shutdown();
+    return;
+  }
+
+  // print interface list
+  bool lFound = false;
+  int lIndex = 0;
+  std::cout << "List of network interfaces: " << std::endl;
+  for( int i=0; i<lInterfaces.size(); ++i )
+  {
+      AVT::VmbAPI::InterfacePtr lInterface = lInterfaces.at(i);
+      std::string lInterfaceID = "";
+      return_value = lInterface->GetID( lInterfaceID );
+      if( VmbErrorSuccess == return_value )
+      {
+          std::cout << ".........[" << i << "] " << lInterfaceID << std::endl;
+
+          // compare given interface ID with current one
+          if( 0 == lInterfaceID.compare( destination_interface_ ) )
+          {
+              // if interface ID matches, keep index
+              lFound = true;
+              lIndex = i;
+          }
+      }
+  }
+
+  // get interface pointer
+  interface_ptr_ = lInterfaces.at( lIndex );
+  if( true == SP_ISNULL(interface_ptr_) )
+  {
+      std::cout << "[F]...No valid interface pointer with given index found" << std::endl;
+      ros::shutdown();
+      return;
+  }
+
+  // check interface type
+  VmbInterfaceType lInterfaceType = VmbInterfaceUnknown;
+  return_value = interface_ptr_->GetType( lInterfaceType );
+  if( (VmbErrorSuccess != return_value) || (VmbInterfaceEthernet != lInterfaceType) )
+  {
+      printf( "[F]...Selected interface is non-GigE interface!\n" );
+      ros::shutdown();
+      return;
+  }
+
+  // open interface
+  return_value = interface_ptr_->Open();
+  if( VmbErrorSuccess != return_value )
+  {
+      std::cout << "[F]...Could not open interface" << std::endl;
+      ros::shutdown();
+      return;
+  }
+
+  std::cout << "......Interface has been opened." << std::endl;
+
 }
 
 bool Trigger::PrepareActionCommand()

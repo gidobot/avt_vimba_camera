@@ -22,6 +22,7 @@ public:
 private:
   void LoadParams();
   void InitializeAddress();
+  void InitializeInterface();
   bool PrepareActionCommand();
   bool SetIntFeatureValue(const std::string& name, int64_t value);
 
@@ -40,6 +41,7 @@ private:
 
   // Params
   struct in_addr destination_ip_;
+  std::string destination_interface_;
   std::string trigger_src_;
   float timer_period_;
   int action_device_key_;
