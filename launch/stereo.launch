@@ -9,14 +9,13 @@
       <arg name="ip" value="192.168.1.20"/>
       <arg name="guid" value=""/>
       <!--<arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>-->
-
-      <arg name="ptp_mode" value="Master"/>
-      <arg name="trigger_source" value="FixedRate"/>
-      <arg name="sync_out_source" value="Exposing"/>
-      <arg name="sync_out_polarity" value="Normal"/>
-
-      <arg name="acquisition_rate" value="10"/>
-      <arg name="acquisition_rate_enable" value="True"/>
+      <arg name="trigger_source" value="Action0"/>
+      <arg name="trigger_selector" value="FrameStart"/>
+      <arg name="trigger_mode" value="On"/>
+      <arg name="exposure" default="5000"/>
+      <arg name="exposure_auto" default="Off"/>
+      <arg name="gain" default="0"/>
+      <arg name="gain_auto" default="Off"/>
     </include>
 
     <!-- Right -->
@@ -25,12 +24,13 @@
       <arg name="ip" value="192.168.1.21"/>
       <arg name="guid" value=""/>
       <!--<arg name="camera_info_url" value="file://$(find avt_vimba_camera)/calibrations/calibration_example.yaml"/>-->
-
-      <arg name="ptp_mode" value="Slave"/>
-      <arg name="trigger_source" value="Line1"/>
-      <arg name="trigger_selector" value="AcquisitionStart"/>
+      <arg name="trigger_source" value="Action0"/>
+      <arg name="trigger_selector" value="FrameStart"/>
       <arg name="trigger_mode" value="On"/>
-      <arg name="sync_in_selector" value="SyncIn1"/>
+      <arg name="exposure" default="5000"/>
+      <arg name="exposure_auto" default="Off"/>
+      <arg name="gain" default="0"/>
+      <arg name="gain_auto" default="Off"/>
     </include>
   </group>
 </launch>

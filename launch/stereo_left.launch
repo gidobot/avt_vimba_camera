@@ -1,0 +1,21 @@
+<launch>
+  <arg name="name" default="camera_left" doc="The name of the camera"/>
+  <arg name="frame_id" default="$(arg name)" doc="The frame id of the camera"/>
+  <arg name="ip" default="192.168.1.20" doc="The IP for the camera to connect to"/>
+  <arg name="guid" default="" doc="The GUID for the camera to connect to"/>
+  <arg name="acquisition_rate" default="5" doc="Camera framerate (Hz)"/>
+  <arg name="acquisition_rate_enable" default="False" doc="Allow fixed camera framerate"/>
+
+  <include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
+    <arg name="name" value="$(arg name)"/>
+    <arg name="frame_id" value="$(arg frame_id)"/>
+    <arg name="ip" value="$(arg ip)"/>
+    <arg name="guid" value="$(arg guid)"/>
+    <arg name="acquisition_rate" value="$(arg acquisition_rate)"/>
+    <arg name="acquisition_rate_enable" value="$(arg acquisition_rate_enable)"/>
+    <arg name="exposure_auto" value="Off"/>
+    <arg name="exposure" value="4000"/>
+    <arg name="gain_auto" value="Off"/>
+    <arg name="gain" value="0.0"/>
+  </include>
+</launch>

@@ -1,6 +1,6 @@
 <launch>
-  <arg name="destination_ip" default="192.168.255.255" doc="The ip address of the camera/s to be triggered" />
-  <arg name="destination_interface" default="enp0s31f6" doc="The network interface to broadcast the trigger signal" />
+  <arg name="destination_ip" default="" doc="The ip address of the camera/s to be triggered" />
+  <arg name="destination_interface" default="" doc="The network interface to broadcast the trigger signal" />
   <arg name="trigger_src" default="timer" doc="When to send action commands. Use 'timer' or 'subscriber'" />
   <arg name="timer_period" default="0.2" doc="Period of timer for sending action commands (s)" />
   <arg name="action_device_key" default="1" doc="The device key for the sent action" />
